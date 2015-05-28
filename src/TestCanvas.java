@@ -39,6 +39,7 @@ public class TestCanvas extends Canvas implements MouseMotionListener {
     private boolean isUpTimeContinuous;
     private int continuousThreshold;
     private int maximumContinuousThreshold;
+    private int necessaryUpTimeToChange;
     
     
     public TestCanvas() {
@@ -53,7 +54,8 @@ public class TestCanvas extends Canvas implements MouseMotionListener {
         continuousUpTime = 0;
         isUpTimeContinuous = false;
         continuousThreshold = 60;
-        maximumContinuousThreshold = 180;
+        maximumContinuousThreshold = 130;
+        necessaryUpTimeToChange = continuousThreshold;
         
         upTime = 0;
         downTime = 0;
@@ -173,8 +175,8 @@ public class TestCanvas extends Canvas implements MouseMotionListener {
     private boolean isCursorOverDot(){
     	topLeftOfCursor.x = cursorPos.x-(cursorWidth/2);
     	topLeftOfCursor.y = cursorPos.y-(cursorHeight/2);
-    	int redPointCenterY = redPoint.y+redDotDiameter;
-    	int redPointCenterX = redPoint.x+redDotDiameter;
+    	int redPointCenterY = redPoint.y+redDotDiameter/2;
+    	int redPointCenterX = redPoint.x+redDotDiameter/2;
     	if(redPointCenterY < topLeftOfCursor.y || redPointCenterY > (topLeftOfCursor.y + cursorHeight)){
     		return false;
     	}
@@ -210,6 +212,7 @@ public class TestCanvas extends Canvas implements MouseMotionListener {
     		if(isContinuousUpTimeOverThreshold() && isXInBounds(redPoint.x) && isYInBounds(redPoint.y)){
     			if(shouldDotChangeDirection()){
     				changeToRandomDirection();
+    				updateNecessaryUpTimeToChange();
         			continuousUpTime = 0;
     			}
     		}
@@ -223,21 +226,18 @@ public class TestCanvas extends Canvas implements MouseMotionListener {
     }
     
     private boolean shouldDotChangeDirection() {
-    	if(continuousUpTime < continuousThreshold) {
-    		return false;
-    	}
-    	else if(continuousUpTime < maximumContinuousThreshold) {
-    		int setThreshDiff = (maximumContinuousThreshold - continuousThreshold);
-    		int curUpTimeDiff = (maximumContinuousThreshold - continuousUpTime);
-    		float probFactor = (float)(setThreshDiff - curUpTimeDiff) / (float)setThreshDiff;
-    		if(Math.random() < probFactor){
-    			return true;
-    		}
+    	if(continuousUpTime < necessaryUpTimeToChange) {
     		return false;
     	}
     	else {
     		return true;
     	}
+    }
+    
+    private void updateNecessaryUpTimeToChange(){
+		int setThreshDiff = (maximumContinuousThreshold - continuousThreshold);
+		necessaryUpTimeToChange = (int) ( ( setThreshDiff * Math.random() ) + continuousThreshold );
+		return;
     }
     
     private void incrementDisplayLabel(){

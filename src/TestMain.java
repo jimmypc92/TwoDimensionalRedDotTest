@@ -32,7 +32,7 @@ public class TestMain{
     
     private void createFrame(){
       //1. Create the frame.
-        testFrame = new JFrame("FrameDemo");
+        testFrame = new JFrame("Two Dimensional Test");
 
         //Create a Layout to hold the canvas and the options pane.
         bLayout = new BorderLayout();
